@@ -28,6 +28,7 @@ def load_data():
         return pd.DataFrame()
 
 df = load_data()
+st.write("✅ Data loaded: ", df.shape)
 
 # -- Sidebar Filters -- #
 st.sidebar.header("🔎 Filters")
@@ -132,6 +133,7 @@ df_filtered = df[
     (df['FAVOURITISM_LEVEL'].isin(fav_filter)) &
     (df['SCORELINE_LABEL'].isin(score_filter))
 ]
+st.write("✅ Data filtered: ", df_filtered.shape)
 
 plots = []
 if selected_exp:
@@ -153,18 +155,21 @@ if selected_exp:
             st.pyplot(fig, use_container_width=True)
             plots.append(fig)
 
+        st.write(f"✅ Chart prepared for: {exp_type}")
+
     st.markdown("*Favourites are determined using Goal Expectancy at the earliest available minute in each match*")
 
-    if st.button("Download All Charts as PDF"):
-        pdf = FPDF()
-        for fig in plots:
-            with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
-                fig.savefig(tmpfile.name)
-                pdf.add_page()
-                pdf.image(tmpfile.name, x=10, y=10, w=190)
-        pdf_path = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False).name
-        pdf.output(pdf_path)
-        with open(pdf_path, "rb") as f:
-            st.download_button("📥 Download PDF", f, file_name="expectancy_charts.pdf")
+    # TEMPORARILY COMMENTED OUT TO TEST STABILITY
+    # if st.button("Download All Charts as PDF"):
+    #     pdf = FPDF()
+    #     for fig in plots:
+    #         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as tmpfile:
+    #             fig.savefig(tmpfile.name)
+    #             pdf.add_page()
+    #             pdf.image(tmpfile.name, x=10, y=10, w=190)
+    #     pdf_path = tempfile.NamedTemporaryFile(suffix=".pdf", delete=False).name
+    #     pdf.output(pdf_path)
+    #     with open(pdf_path, "rb") as f:
+    #         st.download_button("📥 Download PDF", f, file_name="expectancy_charts.pdf")
 else:
     st.warning("Please select at least one expectancy type to display charts.")
